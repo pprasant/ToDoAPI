@@ -1,21 +1,15 @@
 var express = require('express');
+var bodyParser = require('body-parser');
+var _ = require('underscore');
 var app = express();
 var PORT = process.env.PORT || 3000;
 
-var todos = [{
-	id: 1,
-	description: 'Meet mom for lunch',
-	completed: false
-}, {
-	id: 2,
-	description: 'Go to the market',
-	completed: false
-}, {
+var todos = [
 	
-	id: 3,
-	description: 'Feed the cat',
-	completed: true
-}];
+	];
+var todoNextId = 1;
+
+app.use(bodyParser.json());
 
 app.get('/', function(req, res){
 	res.send('TO-DO API Root');
@@ -29,7 +23,10 @@ app.get('/todos', function(req, res){
 // GET /todos/:id
 app.get('/todos/:id', function(req, res){
 	var todoId = parseInt(req.params.id);
-	console.log(todoId);
+	
+	var matchedToDo = _.findWhere(todos, {id: todoId});
+	
+	/*console.log(todoId);
 	var matchedToDo;
 	
 	todos.forEach(function(todo){
@@ -38,7 +35,7 @@ app.get('/todos/:id', function(req, res){
 		matchedToDo = todo;
 		}
 		
-	});
+	});*/
 	
 	console.log(matchedToDo);
 	
@@ -52,6 +49,19 @@ app.get('/todos/:id', function(req, res){
 	
 });
 
+
+// POST /todos
+app.post('/todos', function(req, res){
+	var body = req.body;
+	
+	
+	// add id field
+	body.id = todoNextId++;
+	
+	// push body into array
+	todos.push(body);
+	res.json(body);
+});
 
 app.listen(PORT, function(){
 	console.log('Express listening on port ' + PORT);
